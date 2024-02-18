@@ -2,68 +2,116 @@
 
 
 #include "Game/SGameInstance.h"
-#include "Kismet/KismetSystemLibrary.h"
 #include "SUnrealObjectClass.h"
 #include "Examples/SFlyable.h"
 #include "Examples/SPigeon.h"
-
-
+#include "JsonObjectConverter.h"
+#include "UObject/SavePackage.h"
 
 USGameInstance::USGameInstance()
 {
-	UE_LOG(LogTemp, Log, TEXT("USGameInstance::USGameInstance() has been called."));
-
-    Name = TEXT("USGameInstance Class Default Object");
-    // CDO의 Name 속성에 저장됨.
-    // 중단점을 걸어보면 언리얼 에디터가 실행되기 전에 호출됨을 알 수 있음.
-
 }
 
 void USGameInstance::Init()
 {
-    Super::Init(); // 엔진 업데이트 루틴을 지키기 위해서, 언리얼 엔지니어가 작성한 코드가 먼저 실행되게끔 하기 위함.
+    Super::Init();
 
-    UE_LOG(LogTemp, Log, TEXT("Init() has been called."));
+    FBirdData SrcRawData(TEXT("Pigeon17"), 17);
+    UE_LOG(LogTemp, Log, TEXT("[SrcRawData] Name: %s, ID: %d"), *SrcRawData.Name, SrcRawData.ID);
 
-    UKismetSystemLibrary::PrintString(GetWorld(), TEXT("Init() has been called."));
+    const FString SavedDir = FPaths::Combine(FPlatformMisc::ProjectDir(), TEXT("Saved"));
+    UE_LOG(LogTemp, Log, TEXT("SavedDir: %s"), *SavedDir);
 
-    UClass* RuntimeClassInfo = GetClass();
-    UClass* CompiletimeClassInfo = StaticClass();
+    const FString RawDataFileName(TEXT("RawData.bin"));
+    FString AbsolutePathForRawData = FPaths::Combine(*SavedDir, *RawDataFileName);
+    UE_LOG(LogTemp, Log, TEXT("Relative path for saved file: %s"), *AbsolutePathForRawData);
+    FPaths::MakeStandardFilename(AbsolutePathForRawData);
+    UE_LOG(LogTemp, Log, TEXT("Absolute path for saved file: %s"), *AbsolutePathForRawData);
 
-    //check(RuntimeClassInfo != CompiletimeClassInfo); 주석 풀어서 결과 확인 필요.
-    //ensure(RuntimeClassInfo != CompiletimeClassInfo);
-    //ensureMsgf(RuntimeClassInfo != CompiletimeClassInfo, TEXT("Intentional Error"));
-
-    UE_LOG(LogTemp, Log, TEXT("Class Name: %s"), *RuntimeClassInfo->GetName());
-
-    Name = TEXT("USGameInstance Object");
-    // CDO를 통해 생성된 개체의 Name 속성에 새롭게 대입되는 값.
-
-    UE_LOG(LogTemp, Log, TEXT("USGameInstance::Name: %s"), *(GetClass()->GetDefaultObject<USGameInstance>()->Name));
-    UE_LOG(LogTemp, Log, TEXT("USGameInstance::Name: %s"), *Name);
-
-    USUnrealObjectClass* USObject1 = NewObject<USUnrealObjectClass>();
-    // 언리얼은 이런식으로 new 키워드를 안쓰고 NewObject<>() API를 사용해야 함.
-
-    UE_LOG(LogTemp, Log, TEXT("USObject1's Name: %s"), *USObject1->GetName());
-    // 우리가 정의한 Getter()
-
-    FProperty* NameProperty = USUnrealObjectClass::StaticClass()->FindPropertyByName(TEXT("Name"));
-    // 프로퍼티 시스템을 활용한 Getter()
-
-    FString CompiletimeUSObjectName;
-    if (nullptr != NameProperty)
+    FArchive* RawFileWriterAr = IFileManager::Get().CreateFileWriter(*AbsolutePathForRawData);
+    if (nullptr != RawFileWriterAr)
     {
-        NameProperty->GetValue_InContainer(USObject1, &CompiletimeUSObjectName);
-        UE_LOG(LogTemp, Log, TEXT("CompiletimeUSObjectName: %s"), *CompiletimeUSObjectName);
+        *RawFileWriterAr << SrcRawData;
+        RawFileWriterAr->Close();
+        delete RawFileWriterAr;
+        RawFileWriterAr = nullptr;
     }
 
-    USObject1->HelloUnreal();
-
-    UFunction* HelloUnrealFunction = USObject1->GetClass()->FindFunctionByName(TEXT("HelloUnreal"));
-    if (nullptr != HelloUnrealFunction)
+    FBirdData DstRawData;
+    FArchive* RawFileReaderAr = IFileManager::Get().CreateFileReader(*AbsolutePathForRawData);
+    if (nullptr != RawFileReaderAr)
     {
-        USObject1->ProcessEvent(HelloUnrealFunction, nullptr);
+        *RawFileReaderAr << DstRawData;
+        RawFileReaderAr->Close();
+        delete RawFileReaderAr;
+        RawFileReaderAr = nullptr;
+
+        UE_LOG(LogTemp, Log, TEXT("[DstRawData] Name: %s, ID: %d"), *DstRawData.Name, DstRawData.ID);
+    }
+
+    SerializedPigeon = NewObject<USPigeon>();
+    SerializedPigeon->SetName(TEXT("Pigeon76"));
+    SerializedPigeon->SetID(76);
+    UE_LOG(LogTemp, Log, TEXT("[SerializedPigeon] Name: %s, ID: %d"), *SerializedPigeon->GetName(), SerializedPigeon->GetID());
+
+    const FString ObjectDataFileName(TEXT("ObjectData.bin"));
+    FString AbsolutePathForObjectData = FPaths::Combine(*SavedDir, *ObjectDataFileName);
+    FPaths::MakeStandardFilename(AbsolutePathForObjectData);
+
+    TArray<uint8> BufferArray;
+    FMemoryWriter MemoryWriterAr(BufferArray);
+    SerializedPigeon->Serialize(MemoryWriterAr);
+
+    TUniquePtr<FArchive> ObjectDataFileWriterAr = TUniquePtr<FArchive>(IFileManager::Get().CreateFileWriter(*AbsolutePathForObjectData));
+    if (nullptr != ObjectDataFileWriterAr)
+    {
+        *ObjectDataFileWriterAr << BufferArray;
+        ObjectDataFileWriterAr->Close();
+
+        ObjectDataFileWriterAr = nullptr; //delete ObjectDataFileWriterAr; 와 같은 효과.
+    }
+
+    TArray<uint8> BufferArrayFromObjectDataFile;
+    TUniquePtr<FArchive> ObjectDataFileReaderAr = TUniquePtr<FArchive>(IFileManager::Get().CreateFileReader(*AbsolutePathForObjectData));
+    if (nullptr != ObjectDataFileReaderAr)
+    {
+        *ObjectDataFileReaderAr << BufferArrayFromObjectDataFile;
+        ObjectDataFileReaderAr->Close();
+
+        ObjectDataFileReaderAr = nullptr;
+    }
+
+    FMemoryReader MemoryReaderAr(BufferArrayFromObjectDataFile);
+    USPigeon* Pigeon77 = NewObject<USPigeon>();
+    Pigeon77->Serialize(MemoryReaderAr);
+    UE_LOG(LogTemp, Log, TEXT("[Pigeon77] Name: %s, ID: %d"), *Pigeon77->GetName(), Pigeon77->GetID());
+
+    const FString JsonDataFileName(TEXT("StudyJsonFile.txt"));
+    FString AbsolutePathForJsonData = FPaths::Combine(*SavedDir, *JsonDataFileName);
+    FPaths::MakeStandardFilename(AbsolutePathForJsonData);
+
+    TSharedRef<FJsonObject> SrcJsonObject = MakeShared<FJsonObject>();
+    FJsonObjectConverter::UStructToJsonObject(SerializedPigeon->GetClass(), SerializedPigeon, SrcJsonObject);
+
+    FString JsonOutString;
+    TSharedRef<TJsonWriter<TCHAR>> JsonWriterAr = TJsonWriterFactory<TCHAR>::Create(&JsonOutString);
+    if (true == FJsonSerializer::Serialize(SrcJsonObject, JsonWriterAr))
+    {
+        FFileHelper::SaveStringToFile(JsonOutString, *AbsolutePathForJsonData);
+    }
+
+    FString JsonInString;
+    FFileHelper::LoadFileToString(JsonInString, *AbsolutePathForJsonData);
+    TSharedRef<TJsonReader<TCHAR>> JsonReaderAr = TJsonReaderFactory<TCHAR>::Create(JsonInString);
+
+    TSharedPtr<FJsonObject> DstJsonObject;
+    if (true == FJsonSerializer::Deserialize(JsonReaderAr, DstJsonObject))
+    {
+        USPigeon* Pigeon78 = NewObject<USPigeon>();
+        if (true == FJsonObjectConverter::JsonObjectToUStruct(DstJsonObject.ToSharedRef(), Pigeon78->GetClass(), Pigeon78))
+        {
+            UE_LOG(LogTemp, Log, TEXT("[Pigeon78] Name: %s, ID: %d"), *Pigeon78->GetName(), Pigeon78->GetID());
+        }
     }
 
 }
@@ -71,6 +119,5 @@ void USGameInstance::Init()
 void USGameInstance::Shutdown()
 {
     Super::Shutdown();
-
-    UE_LOG(LogTemp, Log, TEXT("USGameInstance::Shutdown() has been called."));
 }
+
