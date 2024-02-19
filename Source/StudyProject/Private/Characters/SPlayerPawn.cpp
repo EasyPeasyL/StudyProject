@@ -1,74 +1,80 @@
 // SPlayerPawn.cpp
 
+
 #include "Characters/SPlayerPawn.h"
+#include "Components/CapsuleComponent.h"
+#include "GameFramework/FloatingPawnMovement.h"
+#include "GameFramework/SpringArmComponent.h"
+#include "Camera/CameraComponent.h"
 
 ASPlayerPawn::ASPlayerPawn()
 {
-    PrimaryActorTick.bCanEverTick = true; // 개체가 틱될 수 있도록 설정
-}
+    PrimaryActorTick.bCanEverTick = false;
 
-void ASPlayerPawn::PostInitializeComponents()
-{
-    // 개체의 구성 요소가 초기화된 후 호출되는 함수
-    UE_LOG(LogTemp, Log, TEXT("Start ASPlayerPawn::PostInitializeComponents()"));
-    Super::PostInitializeComponents(); // 부모 클래스의 PostInitializeComponents 함수 호출
-    UE_LOG(LogTemp, Log, TEXT("End ASPlayerPawn::PostInitializeComponents()"));
-}
+    float CharacterHalfHeight = 90.f;
+    float CharacterRadius = 40.f;
 
-void ASPlayerPawn::PossessedBy(AController* NewController)
-{
-    // 플레이어 컨트롤러에 의해 해당 개체가 소유되었을 때 호출되는 함수
-    UE_LOG(LogTemp, Log, TEXT("Start ASPlayerPawn::PossessedBy(ASPlayerController)"));
-    Super::PossessedBy(NewController); // 부모 클래스의 PossessedBy 함수 호출
-    UE_LOG(LogTemp, Log, TEXT("End ASPlayerPawn::PossessedBy(ASPlayerController)"));
-}
+#pragma region InitializeCapsuleComponent
+    CapsuleComponent = CreateDefaultSubobject<UCapsuleComponent>(TEXT("CapsuleComponent"));
+    SetRootComponent(CapsuleComponent);
+    CapsuleComponent->SetCapsuleHalfHeight(CharacterHalfHeight);
+    CapsuleComponent->SetCapsuleRadius(CharacterRadius);
+#pragma endregion
 
-void ASPlayerPawn::UnPossessed()
-{
-    // 개체가 플레이어 컨트롤러로부터 소유 해제될 때 호출되는 함수
-    UE_LOG(LogTemp, Log, TEXT("Start ASPlayerPawn::UnPossessed()"));
-    Super::UnPossessed(); // 부모 클래스의 UnPossessed 함수 호출
-    UE_LOG(LogTemp, Log, TEXT("End ASPlayerPawn::UnPossessed()"));
-}
+#pragma region InitializeSkeletalMesh
+    SkeletalMeshComponent = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("SkeletalMeshComponent"));
+    SkeletalMeshComponent->SetupAttachment(RootComponent);
+    FVector PivotPosition(0.f, 0.f, -CharacterHalfHeight);
+    FRotator PivotRotation(0.f, -90.f, 0.f);
+    SkeletalMeshComponent->SetRelativeLocationAndRotation(PivotPosition, PivotRotation);
+    //static ConstructorHelpers::FObjectFinder<USkeletalMesh> SkeletalMeshAsset(TEXT("오브젝트 패스"));
+    //if (true == SkeletalMeshAsset.Succeeded())
+    //{
+    //    SkeletalMeshComponent->SetSkeletalMesh(SkeletalMeshAsset.Object);
+    //}
+#pragma endregion
 
-void ASPlayerPawn::Tick(float DeltaSeconds)
-{
-    // 매 프레임마다 호출되는 함수
-    static bool bOnce = false;
-    if (!bOnce)
-    {
-        UE_LOG(LogTemp, Log, TEXT("Start ASPlayerPawn::Tick()"));
-        bOnce = true;
-    }
+#pragma region InitializeCamera
+    SpringArmComponent = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArmComponent"));
+    SpringArmComponent->SetupAttachment(RootComponent);
+    SpringArmComponent->TargetArmLength = 400.f;
+    SpringArmComponent->SetRelativeRotation(FRotator(-15.f, 0.f, 0.f));
 
-    Super::Tick(DeltaSeconds); // 부모 클래스의 Tick 함수 호출
+    CameraComponent = CreateDefaultSubobject<UCameraComponent>(TEXT("CameraComponent"));
+    CameraComponent->SetupAttachment(SpringArmComponent);
+#pragma endregion
 
-    if (bOnce)
-    {
-        UE_LOG(LogTemp, Log, TEXT("End ASPlayerPawn::Tick()"));
-    }
-}
+    FloatingPawnMovementComponent = CreateDefaultSubobject<UFloatingPawnMovement>(TEXT("FloatingPawnMovementComponent"));
 
-void ASPlayerPawn::EndPlay(EEndPlayReason::Type EndPlayReason)
-{
-    // 개체가 플레이를 종료할 때 호출되는 함수
-    UE_LOG(LogTemp, Log, TEXT("Start ASPlayerPawn::EndPlay()"));
-    Super::EndPlay(EndPlayReason); // 부모 클래스의 EndPlay 함수 호출
-    UE_LOG(LogTemp, Log, TEXT("End ASPlayerPawn::EndPlay()"));
 }
 
 void ASPlayerPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
-    // 플레이어 입력 구성 요소를 설정하는 함수
-    UE_LOG(LogTemp, Log, TEXT("Start ASPlayerPawn::SetupPlayerInputComponent(PlayerInputComponent)"));
-    Super::SetupPlayerInputComponent(PlayerInputComponent); // 부모 클래스의 SetupPlayerInputComponent 함수 호출
-    UE_LOG(LogTemp, Log, TEXT("End ASPlayerPawn::SetupPlayerInputComponent(PlayerInputComponent)"));
+    Super::SetupPlayerInputComponent(PlayerInputComponent);
+
+    PlayerInputComponent->BindAxis(TEXT("UpDown"), this, &ThisClass::UpDown);
+    PlayerInputComponent->BindAxis(TEXT("LeftRight"), this, &ThisClass::LeftRight);
 }
 
 void ASPlayerPawn::BeginPlay()
 {
-    // 개체가 레벨에 배치되고 초기화된 직후에 호출되는 함수
-    UE_LOG(LogTemp, Log, TEXT("Start ASPlayerPawn::BeginPlay()"));
-    Super::BeginPlay(); // 부모 클래스의 BeginPlay 함수 호출
-    UE_LOG(LogTemp, Log, TEXT("End ASPlayerPawn::BeginPlay()"));
+    Super::BeginPlay();
+
+    SkeletalMeshComponent->SetAnimationMode(EAnimationMode::AnimationSingleNode);
+
+    UAnimationAsset* AnimationAsset = LoadObject<UAnimationAsset>(SkeletalMeshComponent, TEXT("/Script/Engine.AnimSequence'/Game/ParagonKwang/Characters/Heroes/Kwang/Animations/Jog_Fwd.Jog_Fwd'"));
+    if (nullptr != AnimationAsset)
+    {
+        SkeletalMeshComponent->PlayAnimation(AnimationAsset, true);
+    }
+}   
+
+void ASPlayerPawn::UpDown(float InAxisValue)
+{
+    AddMovementInput(GetActorForwardVector(), InAxisValue);
+}
+
+void ASPlayerPawn::LeftRight(float InAxisValue)
+{
+    AddMovementInput(GetActorRightVector(), InAxisValue);
 }
