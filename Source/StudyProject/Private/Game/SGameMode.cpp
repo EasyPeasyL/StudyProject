@@ -3,6 +3,8 @@
 #include "Game/SGameMode.h"
 #include "Controllers/SPlayerController.h"
 #include "Characters/SPlayerPawn.h"
+#include "Characters/SViewCharacter.h"
+
 
 ASGameMode::ASGameMode()
 {
@@ -10,6 +12,15 @@ ASGameMode::ASGameMode()
     PlayerControllerClass = ASPlayerController::StaticClass();
     // 기본 폰 클래스를 설정합니다.
     DefaultPawnClass = ASPlayerPawn::StaticClass();
+
+    /*
+    static ConstructorHelpers::FClassFinder<ASViewCharacter> DefaultPlayerCharacterClassRef(TEXT("오브젝트패스"));
+    if (DefaultPlayerCharacterClassRef.Class)
+    {
+        DefaultPawnClass = DefaultPlayerCharacterClassRef.Class;
+    }
+    */
+
 }
 
 void ASGameMode::InitGame(const FString& MapName, const FString& Options, FString& ErrorMessage)
