@@ -38,6 +38,11 @@ void ASViewCharacter::PossessedBy(AController* NewController)
 
     //SetViewMode(EViewMode::BackView);
     SetViewMode(EViewMode::QuarterView);
+
+    //SetViewMode(EViewMode::QuarterView);
+    SetViewMode(EViewMode::BackView);
+    DestArmLength = 400.f; // 초기화에서 한 번 지정해줘야 함.
+    DestArmRotation = FRotator::ZeroRotator;
 }
 
 void ASViewCharacter::SetViewMode(EViewMode InViewMode)
@@ -52,8 +57,8 @@ void ASViewCharacter::SetViewMode(EViewMode InViewMode)
     switch (CurrentViewMode)
     {
     case EViewMode::BackView:
-        SpringArmComponent->TargetArmLength = 400.f;
-        SpringArmComponent->SetRelativeRotation(FRotator::ZeroRotator);
+        //SpringArmComponent->TargetArmLength = 400.f;
+        //SpringArmComponent->SetRelativeRotation(FRotator::ZeroRotator);
         // ControlRotation이 Pawn의 회전과 동기화 -> Pawn의 회전이 SprintArm의 회전 동기화. 이로 인해 SetRotation()이 무의미.
 
         bUseControllerRotationPitch = false;
@@ -72,11 +77,11 @@ void ASViewCharacter::SetViewMode(EViewMode InViewMode)
 
         break;
     case EViewMode::QuarterView:
-        SpringArmComponent->TargetArmLength = 900.f;
-        SpringArmComponent->SetRelativeRotation(FRotator(-45.f, 0.f, 0.f));
+        //SpringArmComponent->TargetArmLength = 900.f;
+        //SpringArmComponent->SetRelativeRotation(FRotator(-45.f, 0.f, 0.f));
 
         bUseControllerRotationPitch = false;
-        bUseControllerRotationYaw = true;
+        bUseControllerRotationYaw = false;
         bUseControllerRotationRoll = false;
 
         SpringArmComponent->bUsePawnControlRotation = false;
@@ -84,6 +89,10 @@ void ASViewCharacter::SetViewMode(EViewMode InViewMode)
         SpringArmComponent->bInheritPitch = false;
         SpringArmComponent->bInheritYaw = false;
         SpringArmComponent->bInheritRoll = false;
+
+        GetCharacterMovement()->bOrientRotationToMovement = false;
+        GetCharacterMovement()->bUseControllerDesiredRotation = true;
+        GetCharacterMovement()->RotationRate = FRotator(0.f, 480.f, 0.f);
 
         break;
     case EViewMode::End:
@@ -116,6 +125,12 @@ void ASViewCharacter::Tick(float DeltaSeconds)
     default:
         break;
     }
+
+    if (KINDA_SMALL_NUMBER < abs(DestArmLength - SpringArmComponent->TargetArmLength))
+    {
+        SpringArmComponent->TargetArmLength = FMath::FInterpTo(SpringArmComponent->TargetArmLength, DestArmLength, DeltaSeconds, ArmLengthChangeSpeed);
+        SpringArmComponent->SetRelativeRotation(FMath::RInterpTo(SpringArmComponent->GetRelativeRotation(), DestArmRotation, DeltaSeconds, ArmRotationChangeSpeed));
+    }
 }
 
 void ASViewCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -126,6 +141,7 @@ void ASViewCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComp
     {
         EnhancedInputComponent->BindAction(PlayerCharacterInputConfigData->MoveAction, ETriggerEvent::Triggered, this, &ASViewCharacter::Move);
         EnhancedInputComponent->BindAction(PlayerCharacterInputConfigData->LookAction, ETriggerEvent::Triggered, this, &ASViewCharacter::Look);
+        EnhancedInputComponent->BindAction(PlayerCharacterInputConfigData->ChangeViewAction, ETriggerEvent::Started, this, &ASViewCharacter::ChangeView);
     }
 }
 
@@ -175,6 +191,45 @@ void ASViewCharacter::Look(const FInputActionValue& InValue)
         AddControllerPitchInput(LookVector.Y);
         break;
     case EViewMode::QuarterView:
+        break;
+    case EViewMode::End:
+        break;
+    default:
+        break;
+    }
+}
+
+void ASViewCharacter::ChangeView(const FInputActionValue& InValue)
+{
+    switch (CurrentViewMode)
+    {
+    case EViewMode::BackView:
+        /* Case 1. 이전에 BackView 시점이었다면
+
+          BackView는 컨트롤 회전값 == 스프링암 회전값.
+          그러나 QuarterView는 캐릭터의 회전값 == 컨트롤 회전값.
+          따라서 시점 변경 전에 캐릭터의 현재 회전값을 컨트롤 회전에 세팅해둬야 함.
+          안그러면 컨트롤 회전이 일어나면서 현재 캐릭터의 회전값이 스프링암 회전값(컨트롤 회전값)으로 동기화됨.
+        */
+        GetController()->SetControlRotation(GetActorRotation());
+        DestArmLength = 900.f;
+        DestArmRotation = FRotator(-45.f, 0.f, 0.f);
+        SetViewMode(EViewMode::QuarterView);
+
+        break;
+    case EViewMode::QuarterView:
+        /* Case 2. 이전에 QuarterView 시점이었다면
+
+          컨트롤 회전이 캐릭터 회전에 맞춰져 있을거임.
+          //QuarterView는 현재 스프링암의 회전값을 컨트롤 회전에 세팅해둔 상태에서 시점 변경해야 올바름.
+          BackView에서는 컨트롤 로테이션이 폰의 회전과 동기화되고 폰의 회전이 스프링 암의 회전과 동기화.
+          따라서 스프링 암의 회전을 임의로 설정할 수 없음. 0으로 고정.
+        */
+        GetController()->SetControlRotation(FRotator::ZeroRotator);
+        DestArmLength = 400.f;
+        DestArmRotation = FRotator::ZeroRotator;
+        SetViewMode(EViewMode::BackView);
+
         break;
     case EViewMode::End:
         break;

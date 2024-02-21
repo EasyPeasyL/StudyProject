@@ -40,6 +40,16 @@ private:
 
     void Look(const FInputActionValue& InValue);
 
+    void ChangeView(const FInputActionValue& InValue);
+
+    float DestArmLength = 0.f;
+
+    float ArmLengthChangeSpeed = 3.f;
+
+    FRotator DestArmRotation = FRotator::ZeroRotator;
+
+    float ArmRotationChangeSpeed = 10.f;
+
 private:
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "SViewCharacter", Meta = (AllowPrivateAccess))
     TObjectPtr<class USInputConfigData> PlayerCharacterInputConfigData;
