@@ -7,6 +7,7 @@
 #include "SAnimInstance.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnCheckHitDelegate);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnCheckCanNextComboDelegate);
 
 /**
  *
@@ -31,6 +32,9 @@ private:
     UFUNCTION()
     void AnimNotify_CheckHit();
 
+    UFUNCTION()
+    void AnimNotify_CheckCanNextCombo();
+
 protected:
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "USAnimInstance")
     float CurrentSpeed;
@@ -48,5 +52,11 @@ protected:
     TObjectPtr<class UAnimMontage> AttackAnimMontage;
 
     FOnCheckHitDelegate OnCheckHitDelegate;
+
+    FOnCheckCanNextComboDelegate OnCheckCanNextComboDelegate;
+
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "USAnimInstance", Meta = (AllowPrivateAccess))
+    uint8 bIsDead : 1;
+
 
 };

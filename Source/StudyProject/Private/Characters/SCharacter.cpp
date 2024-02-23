@@ -33,4 +33,6 @@ ASCharacter::ASCharacter()
     GetCharacterMovement()->JumpZVelocity = 700.f;
     GetCharacterMovement()->AirControl = 0.35f;
     GetCharacterMovement()->BrakingDecelerationWalking = 2000.f;
+
+    bIsDead = false;
 }
