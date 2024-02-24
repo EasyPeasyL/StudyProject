@@ -21,6 +21,7 @@ public class StudyProject : ModuleRules
             // AI
             "NavigationSystem",
             "AIModule",
+            "GameplayTasks"
              });
 
         PrivateDependencyModuleNames.AddRange(new string[] { });

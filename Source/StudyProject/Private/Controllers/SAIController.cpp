@@ -12,6 +12,7 @@
 const float ASAIController::PatrolRadius(500.f);
 const FName ASAIController::StartPatrolPositionKey(TEXT("StartPatrolPosition"));
 const FName ASAIController::EndPatrolPositionKey(TEXT("EndPatrolPosition"));
+const FName ASAIController::TargetActorKey(TEXT("TargetActor"));
 
 ASAIController::ASAIController()
 {
@@ -62,4 +63,21 @@ void ASAIController::EndPlay(const EEndPlayReason::Type EndPlayReason)
     Super::EndPlay(EndPlayReason);
 
     EndAI();
+}
+
+void ASAIController::OnPatrolTimerElapsed()
+{
+    APawn* ControlledPawn = GetPawn();
+    if (true == ::IsValid(ControlledPawn))
+    {
+        UNavigationSystemV1* NavSystem = UNavigationSystemV1::GetNavigationSystem(GetWorld());
+        if (true == ::IsValid(NavSystem))
+        {
+            FNavLocation NextLocation;
+            if (true == NavSystem->GetRandomPointInNavigableRadius(FVector::ZeroVector, PatrolRadius, NextLocation))
+            {
+                UAIBlueprintHelperLibrary::SimpleMoveToLocation(this, NextLocation.Location);
+            }
+        }
+    }
 }

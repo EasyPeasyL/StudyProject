@@ -25,6 +25,9 @@ public:
 
     static const FName EndPatrolPositionKey;
 
+    static const FName TargetActorKey;
+
+
 protected:
     virtual void BeginPlay() override;
 
