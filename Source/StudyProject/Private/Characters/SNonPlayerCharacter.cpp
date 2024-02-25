@@ -7,6 +7,9 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Animations/SAnimInstance.h"
+#include "Characters/SRPGCharacter.h"
+#include "Components/CapsuleComponent.h"
+
 
 
 
@@ -55,7 +58,17 @@ float ASNonPlayerCharacter::TakeDamage(float Damage, FDamageEvent const& DamageE
             DamageCauserCharacter->SetCurrentEXP(DamageCauserCharacter->GetCurrentEXP() + 5);
         }
         CurrentHP = 0.f;
+        bIsDead = true;
+        GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+        GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_None);
+        ASAIController* AIController = Cast<ASAIController>(GetController());
+        if (true == ::IsValid(AIController))
+        {
+            AIController->EndAI();
+        }
     }
+
+    CurrentHP = FMath::Clamp(CurrentHP - FinalDamageAmount, 0.0f, MaxHP);
 
     return FinalDamageAmount;
 }

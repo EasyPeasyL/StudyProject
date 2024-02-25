@@ -14,7 +14,7 @@ USStatComponent::USStatComponent()
 void USStatComponent::BeginPlay()
 {
     Super::BeginPlay();
-    
+
     GameInstance = Cast<USGameInstance>(GetWorld()->GetGameInstance());
     if (true == ::IsValid(GameInstance))
     {

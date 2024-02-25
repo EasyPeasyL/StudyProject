@@ -8,6 +8,7 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Components/SStatComponent.h"
+#include <Animations/SAnimInstance.h>
 
 ASCharacter::ASCharacter()
 {
@@ -35,7 +36,7 @@ ASCharacter::ASCharacter()
     GetCharacterMovement()->AirControl = 0.35f;
     GetCharacterMovement()->BrakingDecelerationWalking = 2000.f;
 
-    // bIsDead = false;
+    bIsDead = false;
 
     StatComponent = CreateDefaultSubobject<USStatComponent>(TEXT("StatComponent"));
 

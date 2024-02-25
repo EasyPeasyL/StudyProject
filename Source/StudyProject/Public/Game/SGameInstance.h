@@ -43,7 +43,6 @@ public:
     const UDataTable* GetCharacterStatDataTable() { return CharacterStatDataTable; }
 
     FSStatTableRow* GetCharacterStatDataTableRow(int32 InLevel);
-    //FSStatTableRow* USGameInstance::GetCharacterStatDataTableRow(int32 InLevel);
 
 private:
     UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "USGameInstance", Meta = (AllowPrivateAccess))
