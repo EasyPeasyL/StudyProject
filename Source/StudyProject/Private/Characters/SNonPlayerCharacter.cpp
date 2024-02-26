@@ -1,15 +1,13 @@
-    // SNonPlayerCharacter.cpp
+// SNonPlayerCharacter.cpp
 
 
 #include "Characters/SNonPlayerCharacter.h"
 #include "Controllers/SAIController.h"
-#include "Components/SStatComponent.h"
-#include "GameFramework/CharacterMovementComponent.h"
+#include "gameframework/charactermovementcomponent.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Animations/SAnimInstance.h"
 #include "Characters/SRPGCharacter.h"
 #include "Components/CapsuleComponent.h"
-
 
 
 
@@ -42,6 +40,7 @@ void ASNonPlayerCharacter::BeginPlay()
     {
         AnimInstance->OnMontageEnded.AddDynamic(this, &ThisClass::OnAttackAnimMontageEnded);
     }
+
 }
 
 float ASNonPlayerCharacter::TakeDamage(float Damage, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
@@ -58,6 +57,7 @@ float ASNonPlayerCharacter::TakeDamage(float Damage, FDamageEvent const& DamageE
             DamageCauserCharacter->SetCurrentEXP(DamageCauserCharacter->GetCurrentEXP() + 5);
         }
         CurrentHP = 0.f;
+
         bIsDead = true;
         GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
         GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_None);
@@ -68,7 +68,7 @@ float ASNonPlayerCharacter::TakeDamage(float Damage, FDamageEvent const& DamageE
         }
     }
 
-    CurrentHP = FMath::Clamp(CurrentHP - FinalDamageAmount, 0.0f, MaxHP);
+    CurrentHP = FMath::Clamp(CurrentHP - FinalDamageAmount, 0.f, MaxHP);
 
     return FinalDamageAmount;
 }

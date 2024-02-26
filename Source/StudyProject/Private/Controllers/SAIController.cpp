@@ -64,20 +64,3 @@ void ASAIController::EndPlay(const EEndPlayReason::Type EndPlayReason)
 
     EndAI();
 }
-
-void ASAIController::OnPatrolTimerElapsed()
-{
-    APawn* ControlledPawn = GetPawn();
-    if (true == ::IsValid(ControlledPawn))
-    {
-        UNavigationSystemV1* NavSystem = UNavigationSystemV1::GetNavigationSystem(GetWorld());
-        if (true == ::IsValid(NavSystem))
-        {
-            FNavLocation NextLocation;
-            if (true == NavSystem->GetRandomPointInNavigableRadius(FVector::ZeroVector, PatrolRadius, NextLocation))
-            {
-                UAIBlueprintHelperLibrary::SimpleMoveToLocation(this, NextLocation.Location);
-            }
-        }
-    }
-}

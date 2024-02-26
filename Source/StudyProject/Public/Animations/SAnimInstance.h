@@ -36,9 +36,6 @@ private:
     UFUNCTION()
     void AnimNotify_CheckCanNextCombo();
 
-    UFUNCTION()
-    void OnCharacterDeath();
-
 protected:
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "USAnimInstance")
     float CurrentSpeed;

@@ -19,6 +19,7 @@
 
 
 
+
 ASRPGCharacter::ASRPGCharacter()
     : bIsAttacking(false)
 {
@@ -44,6 +45,7 @@ ASRPGCharacter::ASRPGCharacter()
     ParticleSystemComponent = CreateDefaultSubobject<UParticleSystemComponent>(TEXT("ParticleSystemComponent"));
     ParticleSystemComponent->SetupAttachment(GetRootComponent());
     ParticleSystemComponent->SetAutoActivate(false);
+
 }
 
 void ASRPGCharacter::BeginPlay()
@@ -89,7 +91,7 @@ float ASRPGCharacter::TakeDamage(float Damage, FDamageEvent const& DamageEvent, 
         GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_None);
     }
 
-    UKismetSystemLibrary::PrintString(this, FString::Printf(TEXT("%s [%.1f / %.1f]"), *GetName(), CurrentHP, MaxHP));  
+    UKismetSystemLibrary::PrintString(this, FString::Printf(TEXT("%s [%.1f / %.1f]"), *GetName(), CurrentHP, MaxHP));
 
     return FinalDamageAmount;
 }
