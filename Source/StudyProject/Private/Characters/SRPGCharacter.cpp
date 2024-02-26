@@ -91,7 +91,7 @@ float ASRPGCharacter::TakeDamage(float Damage, FDamageEvent const& DamageEvent, 
         GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_None);
     }
 
-    UKismetSystemLibrary::PrintString(this, FString::Printf(TEXT("%s [%.1f / %.1f]"), *GetName(), CurrentHP, MaxHP));
+    //UKismetSystemLibrary::PrintString(this, FString::Printf(TEXT("%s [%.1f / %.1f]"), *GetName(), CurrentHP, MaxHP));
 
     return FinalDamageAmount;
 }
@@ -180,7 +180,7 @@ void ASRPGCharacter::CheckHit()
             //UKismetSystemLibrary::PrintString(this, FString::Printf(TEXT("Hit Actor Name: %s"), *HitResult.GetActor()->GetName()));
 
             FDamageEvent DamageEvent;
-            HitResult.GetActor()->TakeDamage(50.f, DamageEvent, GetController(), this);
+            HitResult.GetActor()->TakeDamage(101.f, DamageEvent, GetController(), this);
         }
     }
 

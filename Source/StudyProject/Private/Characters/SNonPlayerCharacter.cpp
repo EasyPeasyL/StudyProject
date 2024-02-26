@@ -52,6 +52,7 @@ float ASNonPlayerCharacter::TakeDamage(float Damage, FDamageEvent const& DamageE
     if (CurrentHP < KINDA_SMALL_NUMBER)
     {
         ASRPGCharacter* DamageCauserCharacter = Cast<ASRPGCharacter>(DamageCauser);
+
         if (true == ::IsValid(DamageCauserCharacter))
         {
             DamageCauserCharacter->SetCurrentEXP(DamageCauserCharacter->GetCurrentEXP() + 5);
@@ -67,8 +68,6 @@ float ASNonPlayerCharacter::TakeDamage(float Damage, FDamageEvent const& DamageE
             AIController->EndAI();
         }
     }
-
-    CurrentHP = FMath::Clamp(CurrentHP - FinalDamageAmount, 0.f, MaxHP);
 
     return FinalDamageAmount;
 }
