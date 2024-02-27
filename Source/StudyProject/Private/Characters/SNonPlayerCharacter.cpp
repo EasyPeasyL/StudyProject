@@ -8,6 +8,7 @@
 #include "Animations/SAnimInstance.h"
 #include "Characters/SRPGCharacter.h"
 #include "Components/CapsuleComponent.h"
+#include "Components/SStatComponent.h"
 
 
 
@@ -47,7 +48,7 @@ float ASNonPlayerCharacter::TakeDamage(float Damage, FDamageEvent const& DamageE
 {
     float FinalDamageAmount = Super::TakeDamage(Damage, DamageEvent, EventInstigator, DamageCauser);
 
-    CurrentHP = FMath::Clamp(CurrentHP - FinalDamageAmount, 0.f, MaxHP);
+   /* CurrentHP = FMath::Clamp(CurrentHP - FinalDamageAmount, 0.f, MaxHP);
 
     if (CurrentHP < KINDA_SMALL_NUMBER)
     {
@@ -62,6 +63,21 @@ float ASNonPlayerCharacter::TakeDamage(float Damage, FDamageEvent const& DamageE
         bIsDead = true;
         GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
         GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_None);
+        ASAIController* AIController = Cast<ASAIController>(GetController());
+        if (true == ::IsValid(AIController))
+        {
+            AIController->EndAI();
+        }
+    }*/
+
+    if (StatComponent->GetCurrentHP() < KINDA_SMALL_NUMBER)
+    {
+        ASRPGCharacter* DamageCauserCharacter = Cast<ASRPGCharacter>(DamageCauser);
+        if (true == ::IsValid(DamageCauserCharacter))
+        {
+            DamageCauserCharacter->SetCurrentEXP(DamageCauserCharacter->GetCurrentEXP() + 5);
+        }
+
         ASAIController* AIController = Cast<ASAIController>(GetController());
         if (true == ::IsValid(AIController))
         {

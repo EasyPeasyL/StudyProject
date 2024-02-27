@@ -7,6 +7,8 @@
 #include "Camera/CameraComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/KismetSystemLibrary.h"
+#include "Components/SStatComponent.h"
+
 
 ASCharacter::ASCharacter()
 {
@@ -34,5 +36,45 @@ ASCharacter::ASCharacter()
     GetCharacterMovement()->AirControl = 0.35f;
     GetCharacterMovement()->BrakingDecelerationWalking = 2000.f;
 
-    bIsDead = false;
+    // bIsDead = false;
+
+    StatComponent = CreateDefaultSubobject<USStatComponent>(TEXT("StatComponent"));
+}
+
+void ASCharacter::BeginPlay()
+{
+    Super::BeginPlay();
+
+    if (false == ::IsValid(StatComponent))
+    {
+        return;
+    }
+
+    if (false == StatComponent->OnOutOfCurrentHPDelegate.IsAlreadyBound(this, &ThisClass::OnCharacterDeath))
+    {
+        StatComponent->OnOutOfCurrentHPDelegate.AddDynamic(this, &ThisClass::OnCharacterDeath);
+    }
+}
+
+float ASCharacter::TakeDamage(float Damage, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
+{
+    float FinalDamageAmount = Super::TakeDamage(Damage, DamageEvent, EventInstigator, DamageCauser);
+
+    StatComponent->SetCurrentHP(StatComponent->GetCurrentHP() - FinalDamageAmount);
+
+    UKismetSystemLibrary::PrintString(this, FString::Printf(TEXT("%s [%.1f / %.1f]"), *GetName(), StatComponent->GetCurrentHP(), StatComponent->GetMaxHP()));
+
+    return FinalDamageAmount;
+}
+
+void ASCharacter::OnCharacterDeath()
+{
+    GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
+    GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_None);
+
+    if (true == StatComponent->OnOutOfCurrentHPDelegate.IsAlreadyBound(this, &ThisClass::OnCharacterDeath))
+    {
+        StatComponent->OnOutOfCurrentHPDelegate.RemoveDynamic(this, &ThisClass::OnCharacterDeath);
+    }
 }
