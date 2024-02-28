@@ -13,8 +13,8 @@
 #include "UI/StudyUserWidget.h"
 #include "UI/SW_HPBar.h"
 #include "Game/SPlayerState.h"
-
-
+#include "Engine/EngineTypes.h"
+#include "Engine/DamageEvents.h"
 
 
 ASNonPlayerCharacter::ASNonPlayerCharacter()
@@ -143,9 +143,17 @@ void ASNonPlayerCharacter::Attack()
     {
         if (true == ::IsValid(HitResult.GetActor()))
         {
-            UKismetSystemLibrary::PrintString(this, FString::Printf(TEXT("[NPC] Hit Actor Name: %s"), *HitResult.GetActor()->GetName()));
+            //UKismetSystemLibrary::PrintString(this, FString::Printf(TEXT("[NPC] Hit Actor Name: %s"), *HitResult.GetActor()->GetName()));
+
+            ASCharacter* PlayerCharacter = Cast<ASCharacter>(HitResult.GetActor());
+            if (true == ::IsValid(PlayerCharacter))
+            {
+                PlayerCharacter->TakeDamage(10.f, FDamageEvent(), GetController(), this);
+            }
         }
     }
+
+#pragma region CollisionDebugDrawing
 
     USAnimInstance* AnimInstance = Cast<USAnimInstance>(GetMesh()->GetAnimInstance());
     if (true == ::IsValid(AnimInstance))

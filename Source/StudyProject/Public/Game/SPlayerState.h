@@ -31,10 +31,14 @@ public:
 
     void SetCurrentEXP(float InCurrentEXP);
 
+    void SavePlayerState();
+
 public:
     FOnCurrentLevelChangedDelegate OnCurrentLevelChangedDelegate;
 
     FOnCurrentEXPChangedDelegate OnCurrentEXPChangedDelegate;
+
+    static FString SaveSlotName;
 
 private:
     UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = "USStatComponent", Meta = (AllowPrivateAccess = true))

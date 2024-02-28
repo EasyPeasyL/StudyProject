@@ -15,8 +15,16 @@ class STUDYPROJECT_API ASPlayerController : public APlayerController
 public:
     ASPlayerController();
 
+    class USHUD* GetHUDWidget() const { return HUDWidget; };
+
 protected:
     virtual void BeginPlay() override;
 
+private:
+    UPROPERTY();
+    TObjectPtr<class USHUD> HUDWidget;
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "ASPlayerController", Meta = (AllowPrivateAccess));
+    TSubclassOf<class USHUD> HUDWidgetClass;
 };
 
