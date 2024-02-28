@@ -16,8 +16,7 @@
 #include "Engine/EngineTypes.h"
 #include "Engine/DamageEvents.h"
 #include "Particles/ParticleSystemComponent.h"
-
-
+#include "Game/SPlayerState.h"
 
 
 ASRPGCharacter::ASRPGCharacter()
@@ -69,6 +68,16 @@ void ASRPGCharacter::BeginPlay()
         AnimInstance->OnCheckHitDelegate.AddDynamic(this, &ThisClass::CheckHit);
         AnimInstance->OnCheckCanNextComboDelegate.AddDynamic(this, &ThisClass::CheckCanNextCombo);
     }
+
+    ASPlayerState* PS = GetPlayerState<ASPlayerState>();
+    if (true == ::IsValid(PS))
+    {
+        if (false == PS->OnCurrentLevelChangedDelegate.IsAlreadyBound(this, &ThisClass::OnCurrentLevelChanged))
+        {
+            PS->OnCurrentLevelChangedDelegate.AddDynamic(this, &ThisClass::OnCurrentLevelChanged);
+        }
+    }
+
 }
 
 void ASRPGCharacter::OnAttackMontageEnded(UAnimMontage* Montage, bool bInterrupted)
@@ -98,15 +107,15 @@ float ASRPGCharacter::TakeDamage(float Damage, FDamageEvent const& DamageEvent, 
     return FinalDamageAmount;
 }
 
-void ASRPGCharacter::SetCurrentEXP(float InCurrentEXP)
-{
-    CurrentEXP = FMath::Clamp(CurrentEXP + InCurrentEXP, 0.f, MaxEXP);
-    if (MaxEXP - KINDA_SMALL_NUMBER < CurrentEXP)
-    {
-        CurrentEXP = 0.f;
-        ParticleSystemComponent->Activate(true);
-    }
-}
+//void ASRPGCharacter::SetCurrentEXP(float InCurrentEXP)
+//{
+//    CurrentEXP = FMath::Clamp(CurrentEXP + InCurrentEXP, 0.f, MaxEXP);
+//    if (MaxEXP - KINDA_SMALL_NUMBER < CurrentEXP)
+//    {
+//        CurrentEXP = 0.f;
+//        ParticleSystemComponent->Activate(true);
+//    }
+//}
 
 void ASRPGCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
@@ -251,4 +260,9 @@ void ASRPGCharacter::EndCombo(UAnimMontage* InAnimMontage, bool bInterrupted)
     CurrentComboCount = 0;
     bIsAttackKeyPressed = false;
     GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Walking);
+}
+
+void ASRPGCharacter::OnCurrentLevelChanged(int32 InOldCurrentLevel, int32 InNewCurrentLevel)
+{
+    ParticleSystemComponent->Activate(true);
 }

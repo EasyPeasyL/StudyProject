@@ -4,6 +4,8 @@
 #include "Components/SStatComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Game/SGameInstance.h"
+#include "Characters/SRPGCharacter.h"
+#include "Game/SPlayerState.h"
 
 USStatComponent::USStatComponent()
 {
@@ -23,6 +25,19 @@ void USStatComponent::BeginPlay()
             float NewMaxHP = GameInstance->GetCharacterStatDataTableRow(1)->MaxHP;
             SetMaxHP(NewMaxHP);
             SetCurrentHP(MaxHP);
+        }
+    }
+
+    ASCharacter* OwnerPlayerCharacter = Cast<ASCharacter>(GetOwner());
+    if (true == ::IsValid(OwnerPlayerCharacter))
+    {
+        ASPlayerState* PS = Cast<ASPlayerState>(OwnerPlayerCharacter->GetPlayerState());
+        if (true == ::IsValid(PS))
+        {
+            if (false == PS->OnCurrentLevelChangedDelegate.IsAlreadyBound(this, &ThisClass::OnCurrentLevelChanged))
+            {
+                PS->OnCurrentLevelChangedDelegate.AddDynamic(this, &ThisClass::OnCurrentLevelChanged);
+            }
         }
     }
 }
@@ -51,4 +66,10 @@ void USStatComponent::SetCurrentHP(float InCurrentHP)
         OnOutOfCurrentHPDelegate.Broadcast();
         CurrentHP = 0.f;
     }
+}
+
+void USStatComponent::OnCurrentLevelChanged(int32 InOldCurrentLevel, int32 InNewCurrentLevel)
+{
+    SetMaxHP(GameInstance->GetCharacterStatDataTableRow(InNewCurrentLevel)->MaxHP);
+    SetCurrentHP(GameInstance->GetCharacterStatDataTableRow(InNewCurrentLevel)->MaxHP);
 }

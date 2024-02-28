@@ -45,4 +45,7 @@ private:
     UPROPERTY(Transient, VisibleInstanceOnly, BlueprintReadOnly, Category = "USStatComponent", Meta = (AllowPrivateAccess))
     float CurrentHP;
 
+    UFUNCTION()
+    void OnCurrentLevelChanged(int32 InOldCurrentLevel, int32 InNewCurrentLevel);
+
 };

@@ -4,6 +4,8 @@
 #include "Controllers/SPlayerController.h"
 #include "Characters/SPlayerPawn.h"
 #include "Characters/SViewCharacter.h"
+#include "Game/SPlayerState.h"
+
 
 
 ASGameMode::ASGameMode()
@@ -67,8 +69,11 @@ APlayerController* ASGameMode::Login(UPlayer* NewPlayer, ENetRole InRemoteRole, 
 
 void ASGameMode::PostLogin(APlayerController* NewPlayer)
 {
-    // 로그인 후에 실행됩니다.
-    UE_LOG(LogTemp, Error, TEXT("         Start ASGameMode::PostLogin(ASPlayerController)"));
     Super::PostLogin(NewPlayer);
-    UE_LOG(LogTemp, Error, TEXT("         End   ASGameMode::PostLogin(ASPlayerController)"));
+
+    ASPlayerState* PlayerState = NewPlayer->GetPlayerState<ASPlayerState>();
+    if (true == ::IsValid(PlayerState))
+    {
+        PlayerState->InitPlayerState();
+    }
 }
