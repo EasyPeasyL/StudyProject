@@ -3,7 +3,8 @@
 #include "Game/SPlayerState.h"
 #include "Game/SGameInstance.h"
 #include "Kismet/GameplayStatics.h"
-#include "Game/SPlayerStateSave.h"
+//#include "Game/SPlayerStateSave.h"
+#include "GameFramework/GameModeBase.h"
 
 FString ASPlayerState::SaveSlotName(TEXT("PlayerCharacter0"));
 
@@ -27,17 +28,53 @@ void ASPlayerState::InitPlayerState()
         }
     }
 
+    //USPlayerStateSave* PlayerStateSave = Cast<USPlayerStateSave>(UGameplayStatics::LoadGameFromSlot(SaveSlotName, 0));
+    //if (false == ::IsValid(PlayerStateSave))
+    //{
+    //    PlayerStateSave = GetMutableDefault<USPlayerStateSave>();
+    //    // Mutable은 수정 가능하다는 의미.
+    //}
+
+    //SetPlayerName(PlayerStateSave->PlayerCharacterName);
+    //SetCurrentLevel(PlayerStateSave->CurrentLevel);
+    //SetCurrentEXP(PlayerStateSave->CurrentEXP);
+
+    //AGameModeBase* GM = UGameplayStatics::GetGameMode(this);
+    //if (true == ::IsValid(GM))
+    //{
+    //    FString SavedTypeString = UGameplayStatics::ParseOption(GM->OptionsString, FString(TEXT("Saved")));
+    //    if (true == SavedTypeString.Equals("true"))
+    //    {
+    //        USPlayerStateSave* PlayerStateSave = Cast<USPlayerStateSave>(UGameplayStatics::LoadGameFromSlot(SaveSlotName, 0));
+    //        if (false == ::IsValid(PlayerStateSave))
+    //        {
+    //            PlayerStateSave = GetMutableDefault<USPlayerStateSave>();
+    //        }
+
+    //        SetPlayerName(PlayerStateSave->PlayerCharacterName);
+    //        SetCurrentLevel(PlayerStateSave->CurrentLevel);
+    //        SetCurrentEXP(PlayerStateSave->CurrentEXP);
+    //    }
+    //    else
+    //    {
+    //        SetPlayerName(TEXT("DefaultPlayerName"));
+    //        SetCurrentLevel(1);
+    //        SetCurrentEXP(0.f);
+    //    }
+    //}
+
     USPlayerStateSave* PlayerStateSave = Cast<USPlayerStateSave>(UGameplayStatics::LoadGameFromSlot(SaveSlotName, 0));
     if (false == ::IsValid(PlayerStateSave))
     {
         PlayerStateSave = GetMutableDefault<USPlayerStateSave>();
-        // Mutable은 수정 가능하다는 의미.
     }
 
     SetPlayerName(PlayerStateSave->PlayerCharacterName);
     SetCurrentLevel(PlayerStateSave->CurrentLevel);
     SetCurrentEXP(PlayerStateSave->CurrentEXP);
+    SetCurrentTeamType(PlayerStateSave->TeamType);
 
+    SavePlayerState();
 }
 
 void ASPlayerState::SetCurrentLevel(int32 InCurrentLevel)

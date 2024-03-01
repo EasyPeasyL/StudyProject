@@ -60,6 +60,11 @@ private:
     UFUNCTION()
     void OnCurrentLevelChanged(int32 InOldCurrentLevel, int32 InNewCurrentLevel);
 
+    UFUNCTION()
+    void OnAssetLoaded();
+
+    void Menu(const FInputActionValue& InValue);
+
 private:
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "ASRPGCharacter", Meta = (AllowPrivateAccess))
     TObjectPtr<class USInputConfigData> PlayerCharacterInputConfigData;
@@ -96,5 +101,9 @@ private:
 
     //UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "ASRPGCharacter", Meta = (AllowPrivateAccess))
     //float CurrentEXP = 0;
+
+    FSoftObjectPath CurrentPlayerCharacterMeshPath = FSoftObjectPath();
+
+    TSharedPtr<struct FStreamableHandle> AssetStreamableHandle = nullptr;
 
 };  

@@ -28,7 +28,11 @@ public class StudyProject : ModuleRules
 
              });
 
-        PrivateDependencyModuleNames.AddRange(new string[] { });
+        PrivateDependencyModuleNames.AddRange(new string[]
+        { 
+            // Custom Modules
+            "StudyProjectSettings",
+        });
 
     }
 }
