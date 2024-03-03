@@ -43,4 +43,6 @@ private:
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = USTPSAnimInstance, meta = (AllowPrivateAccess = true))
     uint8 bIsDead : 1;
 
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = USTPSAnimInstance, meta = (AllowPrivateAccess = true))
+    FRotator ControlRotation;
 };

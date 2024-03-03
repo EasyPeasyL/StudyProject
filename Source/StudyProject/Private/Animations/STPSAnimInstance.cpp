@@ -44,5 +44,8 @@ void USTPSAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
         MoveInput = FVector{ X, Y, Z };
 
         bIsFalling = MovementComponent->IsFalling();
+
+        ControlRotation.Pitch = OwnerCharacter->GetCurrentAimPitch();
+        ControlRotation.Yaw = OwnerCharacter->GetCurrentAimYaw();
     }
 }
