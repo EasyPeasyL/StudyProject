@@ -174,6 +174,10 @@ void ASRPGCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
         EnhancedInputComponent->BindAction(PlayerCharacterInputConfigData->LookAction, ETriggerEvent::Triggered, this, &ThisClass::Look);
         EnhancedInputComponent->BindAction(PlayerCharacterInputConfigData->JumpAction, ETriggerEvent::Started, this, &ACharacter::Jump);
         EnhancedInputComponent->BindAction(PlayerCharacterInputConfigData->AttackAction, ETriggerEvent::Started, this, &ThisClass::Attack);
+        EnhancedInputComponent->BindAction(PlayerCharacterInputConfigData->Attack2Action, ETriggerEvent::Started, this, &ThisClass::Attack2);
+        EnhancedInputComponent->BindAction(PlayerCharacterInputConfigData->Attack3Action, ETriggerEvent::Started, this, &ThisClass::Attack3);
+        EnhancedInputComponent->BindAction(PlayerCharacterInputConfigData->Attack4Action, ETriggerEvent::Started, this, &ThisClass::Attack4);
+        EnhancedInputComponent->BindAction(PlayerCharacterInputConfigData->UtilityAction, ETriggerEvent::Started, this, &ThisClass::Utility);
         EnhancedInputComponent->BindAction(PlayerCharacterInputConfigData->MenuAction, ETriggerEvent::Started, this, &ThisClass::Menu);
     }
 }
@@ -216,8 +220,53 @@ void ASRPGCharacter::Attack(const FInputActionValue& InValue)
     }
 }
 
+void ASRPGCharacter::Attack2(const FInputActionValue& InValue)
+{
+    USAnimInstance* AnimInstance = Cast<USAnimInstance>(GetMesh()->GetAnimInstance());
+    if (true == ::IsValid(AnimInstance) && false == bIsAttacking)
+    {
+        //GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_None);
+        AnimInstance->PlayAttackAnimMontage2();
+        //bIsAttacking = true;
+    }
+}
+
+void ASRPGCharacter::Attack3(const FInputActionValue& InValue)
+{
+    USAnimInstance* AnimInstance = Cast<USAnimInstance>(GetMesh()->GetAnimInstance());
+    if (true == ::IsValid(AnimInstance) && false == bIsAttacking)
+    {
+        //GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_None);
+        AnimInstance->PlayAttackAnimMontage3();
+        //bIsAttacking = true;
+    }
+}
+
+void ASRPGCharacter::Attack4(const FInputActionValue& InValue)
+{
+    USAnimInstance* AnimInstance = Cast<USAnimInstance>(GetMesh()->GetAnimInstance());
+    if (true == ::IsValid(AnimInstance) && false == bIsAttacking)
+    {
+        //GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_None);
+        AnimInstance->PlayAttackAnimMontage4();
+        //bIsAttacking = true;
+    }
+}
+
+void ASRPGCharacter::Utility(const FInputActionValue& InValue)
+{
+    USAnimInstance* AnimInstance = Cast<USAnimInstance>(GetMesh()->GetAnimInstance());
+    if (true == ::IsValid(AnimInstance) && false == bIsAttacking)
+    {
+        //GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_None);
+        AnimInstance->PlayUtilityAnimMontage();
+        //bIsAttacking = true;
+    }
+}
+
 void ASRPGCharacter::CheckHit()
 {
+
     FHitResult HitResult;
     FCollisionQueryParams Params(NAME_None, false, this);
 
@@ -231,36 +280,46 @@ void ASRPGCharacter::CheckHit()
         Params
     );
 
+    
+
     if (true == bResult)
     {
         if (true == ::IsValid(HitResult.GetActor()))
         {
+            ASPlayerState* SPlayerState = GetPlayerState<ASPlayerState>();
+            int32 level = SPlayerState->GetCurrentLevel();
+            //if (true == ::IsValid(SPlayerState))
+            //{
+            //    // SPlayerState가 유효한 경우에만 실행되는 코드
+            //    int32 level = SPlayerState->GetCurrentLevel(); // GetCurrentLevel() 함수 호출
+            //    // Level 변수를 사용하여 무언가를 수행
+            //}
             //UKismetSystemLibrary::PrintString(this, FString::Printf(TEXT("Hit Actor Name: %s"), *HitResult.GetActor()->GetName()));
-
+            //int level = 5.f;
             FDamageEvent DamageEvent;
-            HitResult.GetActor()->TakeDamage(101.f, DamageEvent, GetController(), this);
+            HitResult.GetActor()->TakeDamage(20.f + level * 10, DamageEvent, GetController(), this);
         }
     }
 
-#pragma region CollisionDebugDrawing
-    FVector TraceVec = GetActorForwardVector() * AttackRange;
-    FVector Center = GetActorLocation() + TraceVec * 0.5f;
-    float HalfHeight = AttackRange * 0.5f + AttackRadius;
-    FQuat CapsuleRot = FRotationMatrix::MakeFromZ(TraceVec).ToQuat();
-    FColor DrawColor = true == bResult ? FColor::Green : FColor::Red;
-    float DebugLifeTime = 5.f;
-
-    DrawDebugCapsule(
-        GetWorld(),
-        Center,
-        HalfHeight,
-        AttackRadius,
-        CapsuleRot,
-        DrawColor,
-        false,
-        DebugLifeTime
-    );
-#pragma endregion
+//#pragma region CollisionDebugDrawing
+//    FVector TraceVec = GetActorForwardVector() * AttackRange;
+//    FVector Center = GetActorLocation() + TraceVec * 0.5f;
+//    float HalfHeight = AttackRange * 0.5f + AttackRadius;
+//    FQuat CapsuleRot = FRotationMatrix::MakeFromZ(TraceVec).ToQuat();
+//    FColor DrawColor = true == bResult ? FColor::Green : FColor::Red;
+//    float DebugLifeTime = 5.f;
+//
+//    DrawDebugCapsule(
+//        GetWorld(),
+//        Center,
+//        HalfHeight,
+//        AttackRadius,
+//        CapsuleRot,
+//        DrawColor,
+//        false,
+//        DebugLifeTime
+//    );
+//#pragma endregion
 
 }
 
@@ -274,7 +333,7 @@ void ASRPGCharacter::BeginCombo()
 
     CurrentComboCount = 1;
 
-    GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_None);
+    //GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_None);
 
     AnimInstance->PlayAttackAnimMontage();
 

@@ -30,7 +30,7 @@ void ASAIController::BeginAI(APawn* InPawn)
         {
             bool bRunSucceeded = RunBehaviorTree(BehaviorTree);
             ensure(true == bRunSucceeded);
-            UKismetSystemLibrary::PrintString(this, FString::Printf(TEXT("BeginAI() has been called.")));
+            //UKismetSystemLibrary::PrintString(this, FString::Printf(TEXT("BeginAI() has been called.")));
             BlackboardComponent->SetValueAsVector(StartPatrolPositionKey, InPawn->GetActorLocation());
 
         }
@@ -43,7 +43,7 @@ void ASAIController::EndAI()
     if (true == ::IsValid(BehaviorTreeComponent))
     {
         BehaviorTreeComponent->StopTree();
-        UKismetSystemLibrary::PrintString(this, FString::Printf(TEXT("EndAI() has been called.")));
+        //UKismetSystemLibrary::PrintString(this, FString::Printf(TEXT("EndAI() has been called.")));
     }
 }
 

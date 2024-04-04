@@ -12,6 +12,11 @@ class STUDYPROJECT_API ASNonPlayerCharacter : public ASCharacter
     GENERATED_BODY()
 
     friend class UBTTask_Attack;
+    friend class UBTTask_Attack2;
+    friend class UBTTask_Attack3;
+    friend class UBTTask_Attack4;
+    friend class UBTTask_Utility;
+    friend class UAN_CheckHit;
 
 public:
     ASNonPlayerCharacter();
@@ -26,12 +31,19 @@ public:
 
 private:
     void Attack();
+    void Attack2();
+    void Attack3();
+    void Attack4();
+    void Utility();
+
+    UFUNCTION()
+    void CheckHit();
 
     UFUNCTION()
     void OnAttackAnimMontageEnded(class UAnimMontage* Montage, bool bIsInterrupt);
 
 private:
-    float AttackRange = 200.f;
+    float AttackRange = 1150.f;
 
     float AttackRadius = 50.f;
 

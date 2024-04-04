@@ -8,14 +8,14 @@
 UBTTask_Attack::UBTTask_Attack()
 {
     bNotifyTick = true;
+    NodeName = TEXT("Attack1");
 }
 
 void UBTTask_Attack::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds)
 {
     Super::TickTask(OwnerComp, NodeMemory, DeltaSeconds);
 
-    ASAIController* AIC = Cast<ASAIController>(OwnerComp.GetAIOwner());
-    if (true == ::IsValid(AIC))
+    ASAIController* AIC = Cast<ASAIController>(OwnerComp.GetAIOwner()); 
     {
         ASNonPlayerCharacter* NPC = Cast<ASNonPlayerCharacter>(AIC->GetPawn());
         if (true == ::IsValid(NPC))

@@ -31,14 +31,18 @@ public:
     TObjectPtr<class UInputAction> AttackAction;
 
     UPROPERTY(EditAnywhere, BlueprintReadOnly)
+    TObjectPtr<class UInputAction> Attack2Action;
+
+    UPROPERTY(EditAnywhere, BlueprintReadOnly)
+    TObjectPtr<class UInputAction> Attack3Action;
+
+    UPROPERTY(EditAnywhere, BlueprintReadOnly)
+    TObjectPtr<class UInputAction> Attack4Action;
+
+    UPROPERTY(EditAnywhere, BlueprintReadOnly)
+    TObjectPtr<class UInputAction> UtilityAction;
+
+    UPROPERTY(EditAnywhere, BlueprintReadOnly)
     TObjectPtr<class UInputAction> MenuAction;
 
-    UPROPERTY(EditAnywhere, BlueprintReadOnly)
-    TObjectPtr<class UInputAction> IronSightAction;
-
-    UPROPERTY(EditAnywhere, BlueprintReadOnly)
-    TObjectPtr<class UInputAction> TriggerAction;
-
-    UPROPERTY(EditAnywhere, BlueprintReadOnly)
-    TObjectPtr<class UInputAction> LandMineAction;
 };

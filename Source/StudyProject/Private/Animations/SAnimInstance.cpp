@@ -3,6 +3,7 @@
 
 #include "Animations/SAnimInstance.h"
 #include "Characters/SRPGCharacter.h"
+#include "Characters/SNonPlayerCharacter.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Components/SStatComponent.h"
 
@@ -64,6 +65,50 @@ void USAnimInstance::PlayAttackAnimMontage()
         if (false == Montage_IsPlaying(AttackAnimMontage))
         {
             Montage_Play(AttackAnimMontage);
+        }
+    }
+}
+
+void USAnimInstance::PlayAttackAnimMontage2()
+{
+    if (true == ::IsValid(AttackAnimMontage2))
+    {
+        if (false == Montage_IsPlaying(AttackAnimMontage2))
+        {
+            Montage_Play(AttackAnimMontage2);
+        }
+    }
+}
+
+void USAnimInstance::PlayAttackAnimMontage3()
+{
+    if (true == ::IsValid(AttackAnimMontage3))
+    {
+        if (false == Montage_IsPlaying(AttackAnimMontage3))
+        {
+            Montage_Play(AttackAnimMontage3);
+        }
+    }
+}
+
+void USAnimInstance::PlayAttackAnimMontage4()
+{
+    if (true == ::IsValid(AttackAnimMontage4))
+    {
+        if (false == Montage_IsPlaying(AttackAnimMontage4))
+        {
+            Montage_Play(AttackAnimMontage4);
+        }
+    }
+}
+
+void USAnimInstance::PlayUtilityAnimMontage()
+{
+    if (true == ::IsValid(UtilityAnimMontage))
+    {
+        if (false == Montage_IsPlaying(UtilityAnimMontage))
+        {
+            Montage_Play(UtilityAnimMontage);
         }
     }
 }

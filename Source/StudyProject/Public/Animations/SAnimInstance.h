@@ -30,6 +30,14 @@ public:
 private:
     void PlayAttackAnimMontage();
 
+    void PlayAttackAnimMontage2();
+
+    void PlayAttackAnimMontage3();
+
+    void PlayAttackAnimMontage4();
+
+    void PlayUtilityAnimMontage();
+
     UFUNCTION()
     void AnimNotify_CheckHit();
 
@@ -54,6 +62,18 @@ protected:
 
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "USAnimInstance", Meta = (AllowPrivateAccess))
     TObjectPtr<class UAnimMontage> AttackAnimMontage;
+
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "USAnimInstance", Meta = (AllowPrivateAccess))
+    TObjectPtr<class UAnimMontage> AttackAnimMontage2;
+
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "USAnimInstance", Meta = (AllowPrivateAccess))
+    TObjectPtr<class UAnimMontage> AttackAnimMontage3;
+
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "USAnimInstance", Meta = (AllowPrivateAccess))
+    TObjectPtr<class UAnimMontage> AttackAnimMontage4;
+
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "USAnimInstance", Meta = (AllowPrivateAccess))
+    TObjectPtr<class UAnimMontage> UtilityAnimMontage;
 
     FOnCheckHitDelegate OnCheckHitDelegate;
 

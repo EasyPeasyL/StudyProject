@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Characters/SCharacter.h"
+#include "SCharacter.h"
 #include "InputActionValue.h"
 #include "SRPGCharacter.generated.h"
 
@@ -46,6 +46,14 @@ private:
 
     void Attack(const FInputActionValue& InValue);
 
+    void Attack2(const FInputActionValue& InValue);
+
+    void Attack3(const FInputActionValue& InValue);
+
+    void Attack4(const FInputActionValue& InValue);
+
+    void Utility(const FInputActionValue& InValue);
+
     UFUNCTION()
     void CheckHit();
 
@@ -80,7 +88,7 @@ private:
 
     uint8 bIsAttacking : 1;
 
-    FString AttackAnimMontageSectionName = FString(TEXT("Attack"));
+    FString AttackAnimMontageSectionName = FString(TEXT("Attack2"));
 
     int32 MaxComboCount = 3;
 

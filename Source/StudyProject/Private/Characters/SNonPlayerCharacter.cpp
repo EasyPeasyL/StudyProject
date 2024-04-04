@@ -44,7 +44,6 @@ void ASNonPlayerCharacter::BeginPlay()
         GetCharacterMovement()->bOrientRotationToMovement = false;
         GetCharacterMovement()->bUseControllerDesiredRotation = true;
         GetCharacterMovement()->RotationRate = FRotator(0.f, 480.f, 0.f);
-
         GetCharacterMovement()->MaxWalkSpeed = 300.f;
     }
 
@@ -52,6 +51,7 @@ void ASNonPlayerCharacter::BeginPlay()
     if (true == ::IsValid(AnimInstance) && false == AnimInstance->OnMontageEnded.IsAlreadyBound(this, &ThisClass::OnAttackAnimMontageEnded))
     {
         AnimInstance->OnMontageEnded.AddDynamic(this, &ThisClass::OnAttackAnimMontageEnded);
+        AnimInstance->OnCheckHitDelegate.AddDynamic(this, &ThisClass::CheckHit);
     }
 
 }
@@ -126,6 +126,88 @@ void ASNonPlayerCharacter::SetWidget(UStudyUserWidget* InStudyUserWidget)
 
 void ASNonPlayerCharacter::Attack()
 {
+#pragma region CollisionDebugDrawing
+
+    USAnimInstance* AnimInstance = Cast<USAnimInstance>(GetMesh()->GetAnimInstance());
+    if (true == ::IsValid(AnimInstance))
+    {
+        AnimInstance->PlayAttackAnimMontage();
+        bIsAttacking = true;
+        if (false == AnimInstance->OnMontageEnded.IsAlreadyBound(this, &ThisClass::OnAttackAnimMontageEnded))
+        {
+            AnimInstance->OnMontageEnded.AddDynamic(this, &ThisClass::OnAttackAnimMontageEnded);
+        }
+    }
+}
+
+void ASNonPlayerCharacter::Attack2()
+{
+#pragma region CollisionDebugDrawing
+
+    USAnimInstance* AnimInstance = Cast<USAnimInstance>(GetMesh()->GetAnimInstance());
+    if (true == ::IsValid(AnimInstance))
+    {
+        AnimInstance->PlayAttackAnimMontage2();
+        bIsAttacking = true;
+        if (false == AnimInstance->OnMontageEnded.IsAlreadyBound(this, &ThisClass::OnAttackAnimMontageEnded))
+        {
+            AnimInstance->OnMontageEnded.AddDynamic(this, &ThisClass::OnAttackAnimMontageEnded);
+        }
+    }
+}
+
+void ASNonPlayerCharacter::Attack3()
+{
+#pragma region CollisionDebugDrawing
+
+    USAnimInstance* AnimInstance = Cast<USAnimInstance>(GetMesh()->GetAnimInstance());
+    if (true == ::IsValid(AnimInstance))
+    {
+        AnimInstance->PlayAttackAnimMontage3();
+        bIsAttacking = true;
+        if (false == AnimInstance->OnMontageEnded.IsAlreadyBound(this, &ThisClass::OnAttackAnimMontageEnded))
+        {
+            AnimInstance->OnMontageEnded.AddDynamic(this, &ThisClass::OnAttackAnimMontageEnded);
+        }
+    }
+}
+
+void ASNonPlayerCharacter::Attack4()
+{
+#pragma region CollisionDebugDrawing
+
+    USAnimInstance* AnimInstance = Cast<USAnimInstance>(GetMesh()->GetAnimInstance());
+    if (true == ::IsValid(AnimInstance))
+    {
+        AnimInstance->PlayAttackAnimMontage4();
+        bIsAttacking = true;
+        if (false == AnimInstance->OnMontageEnded.IsAlreadyBound(this, &ThisClass::OnAttackAnimMontageEnded))
+        {
+            AnimInstance->OnMontageEnded.AddDynamic(this, &ThisClass::OnAttackAnimMontageEnded);
+        }
+    }
+}
+
+void ASNonPlayerCharacter::Utility()
+{
+#pragma region CollisionDebugDrawing
+
+    USAnimInstance* AnimInstance = Cast<USAnimInstance>(GetMesh()->GetAnimInstance());
+    if (true == ::IsValid(AnimInstance))
+    {
+        AnimInstance->PlayUtilityAnimMontage();
+        bIsAttacking = true;
+        if (false == AnimInstance->OnMontageEnded.IsAlreadyBound(this, &ThisClass::OnAttackAnimMontageEnded))
+        {
+            AnimInstance->OnMontageEnded.AddDynamic(this, &ThisClass::OnAttackAnimMontageEnded);
+        }
+    }
+}
+
+void ASNonPlayerCharacter::CheckHit()
+{
+    UKismetSystemLibrary::PrintString(this, FString::Printf(TEXT("checkhit!!!!")));
+
     FHitResult HitResult;
     FCollisionQueryParams Params(NAME_None, false, this);
 
@@ -153,39 +235,27 @@ void ASNonPlayerCharacter::Attack()
         }
     }
 
-#pragma region CollisionDebugDrawing
-
-    USAnimInstance* AnimInstance = Cast<USAnimInstance>(GetMesh()->GetAnimInstance());
-    if (true == ::IsValid(AnimInstance))
-    {
-        AnimInstance->PlayAttackAnimMontage();
-        bIsAttacking = true;
-        if (false == AnimInstance->OnMontageEnded.IsAlreadyBound(this, &ThisClass::OnAttackAnimMontageEnded))
-        {
-            AnimInstance->OnMontageEnded.AddDynamic(this, &ThisClass::OnAttackAnimMontageEnded);
-        }
-    }
-
-#pragma region CollisionDebugDrawing
-    FVector TraceVec = GetActorForwardVector() * AttackRange;
-    FVector Center = GetActorLocation() + TraceVec * 0.5f;
-    float HalfHeight = AttackRange * 0.5f + AttackRadius;
-    FQuat CapsuleRot = FRotationMatrix::MakeFromZ(TraceVec).ToQuat();
-    FColor DrawColor = true == bResult ? FColor::Green : FColor::Red;
-    float DebugLifeTime = 5.f;
-
-    DrawDebugCapsule(
-        GetWorld(),
-        Center,
-        HalfHeight,
-        AttackRadius,
-        CapsuleRot,
-        DrawColor,
-        false,
-        DebugLifeTime
-    );
+//#pragma region CollisionDebugDrawing
+//    FVector TraceVec = GetActorForwardVector() * AttackRange;
+//    FVector Center = GetActorLocation() + TraceVec * 0.5f;
+//    float HalfHeight = AttackRange * 0.5f + AttackRadius;
+//    FQuat CapsuleRot = FRotationMatrix::MakeFromZ(TraceVec).ToQuat();
+//    FColor DrawColor = true == bResult ? FColor::Green : FColor::Red;
+//    float DebugLifeTime = 5.f;
+//
+//    DrawDebugCapsule(
+//        GetWorld(),
+//        Center,
+//        HalfHeight,
+//        AttackRadius,
+//        CapsuleRot,
+//        DrawColor,
+//        false,
+//        DebugLifeTime
+//    );
 #pragma endregion
 }
+
 
 void ASNonPlayerCharacter::OnAttackAnimMontageEnded(UAnimMontage* Montage, bool bIsInterrupt)
 {

@@ -28,7 +28,7 @@ void UBTService_DetectPlayerCharacter::TickNode(UBehaviorTreeComponent& OwnerCom
             if (true == ::IsValid(World))
             {
                 FVector CenterPosition = NPC->GetActorLocation();
-                float DetectRadius = 300.f;
+                float DetectRadius = 1200.f;
                 TArray<FOverlapResult> OverlapResults; 
                 FCollisionQueryParams CollisionQueryParams(NAME_None, false, NPC);
                 bool bResult = World->OverlapMultiByChannel(
@@ -40,7 +40,7 @@ void UBTService_DetectPlayerCharacter::TickNode(UBehaviorTreeComponent& OwnerCom
                     CollisionQueryParams
                 );
 
-                DrawDebugSphere(World, CenterPosition, DetectRadius, 16, FColor::Green, false, 0.5f);
+                //DrawDebugSphere(World, CenterPosition, DetectRadius, 16, FColor::Green, false, 0.5f);
 
                 if (true == bResult)
                 {
@@ -53,10 +53,10 @@ void UBTService_DetectPlayerCharacter::TickNode(UBehaviorTreeComponent& OwnerCom
                             {
                                 OwnerComp.GetBlackboardComponent()->SetValueAsObject(ASAIController::TargetActorKey, PC);
 
-                                UKismetSystemLibrary::PrintString(this, FString::Printf(TEXT("Detected!")));
-                                DrawDebugSphere(World, CenterPosition, DetectRadius, 16, FColor::Red, false, 0.5f);
-                                DrawDebugPoint(World, PC->GetActorLocation(), 10.f, FColor::Red, false, 0.5f);
-                                DrawDebugLine(World, NPC->GetActorLocation(), PC->GetActorLocation(), FColor::Red, false, 0.5f, 0u, 3.f);
+                                //UKismetSystemLibrary::PrintString(this, FString::Printf(TEXT("Detected!")));
+                                //DrawDebugSphere(World, CenterPosition, DetectRadius, 16, FColor::Red, false, 0.5f);
+                                //DrawDebugPoint(World, PC->GetActorLocation(), 10.f, FColor::Red, false, 0.5f);
+                                //DrawDebugLine(World, NPC->GetActorLocation(), PC->GetActorLocation(), FColor::Red, false, 0.5f, 0u, 3.f);
 
                                 return;
                             }
@@ -64,7 +64,7 @@ void UBTService_DetectPlayerCharacter::TickNode(UBehaviorTreeComponent& OwnerCom
                             {
                                 OwnerComp.GetBlackboardComponent()->SetValueAsObject(ASAIController::TargetActorKey, nullptr);
 
-                                DrawDebugSphere(World, CenterPosition, DetectRadius, 16, FColor::Green, false, 0.5f);
+                                //DrawDebugSphere(World, CenterPosition, DetectRadius, 16, FColor::Green, false, 0.5f);
                             }
                         }
                     }
@@ -74,9 +74,9 @@ void UBTService_DetectPlayerCharacter::TickNode(UBehaviorTreeComponent& OwnerCom
                     OwnerComp.GetBlackboardComponent()->SetValueAsObject(ASAIController::TargetActorKey, nullptr);
                 }
 
-                UKismetSystemLibrary::PrintString(this, FString::Printf(TEXT("No target detected...")));
+                //UKismetSystemLibrary::PrintString(this, FString::Printf(TEXT("No target detected...")));
 
-                DrawDebugSphere(World, CenterPosition, DetectRadius, 16, FColor::Green, false, 0.5f);
+                //DrawDebugSphere(World, CenterPosition, DetectRadius, 16, FColor::Green, false, 0.5f);
             }
         }
     }

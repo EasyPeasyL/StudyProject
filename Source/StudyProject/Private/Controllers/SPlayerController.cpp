@@ -70,17 +70,6 @@ void ASPlayerController::BeginPlay()
                 }
             }
         }
-
-        if (true == ::IsValid(CrosshairUIClass))
-        {
-            UUserWidget* CrosshairUI = CreateWidget<UUserWidget>(this, CrosshairUIClass);
-            if (true == ::IsValid(CrosshairUI))
-            {
-                CrosshairUI->AddToViewport(1);
-
-                CrosshairUI->SetVisibility(ESlateVisibility::Visible);
-            }
-        }
     }
 
     if (true == ::IsValid(MenuUIClass))
